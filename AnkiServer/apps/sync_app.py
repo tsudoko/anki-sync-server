@@ -28,7 +28,7 @@ import string
 import unicodedata
 import zipfile
 
-from io import StringIO
+from io import BytesIO
 from sqlite3 import dbapi2 as sqlite
 
 import AnkiServer
@@ -120,7 +120,7 @@ class SyncMediaHandler(MediaSyncer):
         max_zip_size = 100*1024*1024
         max_meta_file_size = 100000
 
-        file_buffer = StringIO(zip_data)
+        file_buffer = BytesIO(zip_data)
         zip_file = zipfile.ZipFile(file_buffer, 'r')
 
         meta_file_size = zip_file.getinfo("_meta").file_size
@@ -142,11 +142,11 @@ class SyncMediaHandler(MediaSyncer):
         according to the data in zip file zipData.
         """
 
-        file_buffer = StringIO(zip_data)
+        file_buffer = BytesIO(zip_data)
         zip_file = zipfile.ZipFile(file_buffer, 'r')
 
         # Get meta info first.
-        meta = json.loads(zip_file.read("_meta"))
+        meta = json.loads(zip_file.read("_meta").decode("utf-8"))
 
         # Remove media files that were removed on the client.
         media_to_remove = []
@@ -231,7 +231,7 @@ class SyncMediaHandler(MediaSyncer):
         flist = {}
         cnt = 0
         sz = 0
-        f = StringIO()
+        f = BytesIO()
         z = zipfile.ZipFile(f, "w", compression=zipfile.ZIP_DEFLATED)
 
         for fname in files:
@@ -390,7 +390,7 @@ class SyncApp(object):
         import hashlib, time, random, string
         chars = string.ascii_letters + string.digits
         val = ':'.join([username, str(int(time.time())), ''.join(random.choice(chars) for x in range(8))])
-        return hashlib.md5(val).hexdigest()
+        return hashlib.md5(val.encode("utf-8")).hexdigest()
 
     def create_session(self, username, user_path):
         return SyncUserSession(username,
@@ -426,7 +426,7 @@ class SyncApp(object):
         import gzip
 
         if compression:
-            buf = gzip.GzipFile(mode="rb", fileobj=StringIO(data))
+            buf = gzip.GzipFile(mode="rb", fileobj=BytesIO(data))
             data = buf.read().decode("utf-8")
             buf.close()
 
@@ -475,7 +475,7 @@ class SyncApp(object):
 
         col.close()
         try:
-            data = open(session.get_collection_path(), 'rb').read().decode("utf-8")
+            data = open(session.get_collection_path(), 'rb').read()
         finally:
             col.reopen()
         return data
@@ -503,7 +503,7 @@ class SyncApp(object):
             compression = 0
 
         try:
-            data = req.POST['data'].file.read().decode("utf-8")
+            data = req.POST['data'].file.read()
             data = self._decode_data(data, compression)
         except KeyError:
             data = {}
