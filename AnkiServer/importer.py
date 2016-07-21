@@ -17,7 +17,6 @@
 
 from anki.importing.csvfile import TextImporter
 from anki.importing.apkg import AnkiPackageImporter
-from anki.importing.anki1 import Anki1Importer
 from anki.importing.supermemo_xml import SupermemoXmlImporter
 from anki.importing.mnemo import MnemosyneImporter
 from anki.importing.pauker import PaukerImporter
@@ -30,7 +29,6 @@ __all__ = ['get_importer_class', 'import_file']
 importers = {
   'text': TextImporter,
   'apkg': AnkiPackageImporter,
-  'anki1': Anki1Importer,
   'supermemo_xml': SupermemoXmlImporter,
   'mnemosyne': MnemosyneImporter,
   'pauker': PaukerImporter,
