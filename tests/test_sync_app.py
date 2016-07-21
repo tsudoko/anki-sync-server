@@ -97,8 +97,8 @@ class SqliteUserManagerTest(SimpleUserManagerTest):
         if os.path.exists(db_path):
             os.remove(db_path)
 
-        salt = binascii.b2a_hex(os.urandom(8))
-        crypto_hash = hashlib.sha256(username+password+salt).hexdigest()+salt
+        salt = binascii.b2a_hex(os.urandom(8)).decode("utf-8")
+        hash = hashlib.sha256(bytes(username+password+salt, "utf-8")).hexdigest()+salt
 
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -106,7 +106,7 @@ class SqliteUserManagerTest(SimpleUserManagerTest):
         cursor.execute("""CREATE TABLE IF NOT EXISTS auth
                        (user VARCHAR PRIMARY KEY, hash VARCHAR)""")
 
-        cursor.execute("INSERT INTO auth VALUES (?, ?)", (username, crypto_hash))
+        cursor.execute("INSERT INTO auth VALUES (?, ?)", (username, hash))
 
         conn.commit()
         conn.close()

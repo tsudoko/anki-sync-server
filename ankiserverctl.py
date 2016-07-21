@@ -68,8 +68,8 @@ def adduser(username):
         print("Enter password for "+username+": ")
 
         password = getpass.getpass()
-        salt = binascii.b2a_hex(os.urandom(8))
-        hash = hashlib.sha256(username+password+salt).hexdigest()+salt
+        salt = binascii.b2a_hex(os.urandom(8)).decode("utf-8")
+        hash = hashlib.sha256(bytes(username+password+salt, "utf-8")).hexdigest()+salt
 
         conn = sqlite3.connect(AUTHDBPATH)
         cursor = conn.cursor()
