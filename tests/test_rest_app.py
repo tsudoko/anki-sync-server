@@ -418,7 +418,7 @@ class ImportExportHandlerTest(CollectionTestBase):
         for row in self.export_rows:
             export_data += '\t'.join(row) + '\n'
         export_path = os.path.join(self.temp_dir, 'export.txt')
-        with file(export_path, 'wt') as fd:
+        with open(export_path, 'wt') as fd:
             fd.write(export_data)
 
         return (export_data, export_path)

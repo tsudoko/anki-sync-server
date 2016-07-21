@@ -69,7 +69,7 @@ class CollectionWrapperTest(unittest.TestCase):
         self.assertFalse(os.path.exists(self.collection_path))
         
         # Create a faux collection file
-        with file(self.collection_path, 'wt') as fd:
+        with open(self.collection_path, 'wt') as fd:
             fd.write('Collection!')
 
         # Run it when the collection does exist
