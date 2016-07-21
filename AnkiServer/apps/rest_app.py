@@ -109,7 +109,7 @@ class RestApp(object):
         """
 
         if name in self.handlers[type]:
-            raise "Handler already for %(type)s/%(name)s exists!"
+            raise Exception("Handler already for %(type)s/%(name)s exists!")
         self.handlers[type][name] = handler
 
     def add_handler_group(self, type, group):
