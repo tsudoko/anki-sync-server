@@ -19,10 +19,10 @@ def add_note(col, data):
     model = col.models.byName(data['model'])
 
     note = Note(col, model)
-    for name, value in data['fields'].items():
+    for name, value in list(data['fields'].items()):
         note[name] = value
 
-    if data.has_key('tags'):
+    if 'tags' in data:
         note.setTagsFromStr(data['tags'])
 
     col.addNote(note)

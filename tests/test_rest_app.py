@@ -119,8 +119,8 @@ class RestAppTest(unittest.TestCase):
 
         data = self.rest_app._parseRequestBody(req)
         self.assertEqual(data, {'key': 'value'})
-        self.assertEqual(data.keys(), ['key'])
-        self.assertEqual(type(data.keys()[0]), str)
+        self.assertEqual(list(data.keys()), ['key'])
+        self.assertEqual(type(list(data.keys())[0]), str)
 
         # test some bad data
         req.body = '{aaaaaaa}'
@@ -257,7 +257,7 @@ class CollectionHandlerTest(CollectionTestBase):
         try:
             data = {'code': 'pl'}
             self.execute('set_language', data)
-            self.assertEqual(anki.lang._('Again'), u'Znowu')
+            self.assertEqual(anki.lang._('Again'), 'Znowu')
         finally:
             # return everything to normal!
             anki.lang.setLang('en')
@@ -321,17 +321,17 @@ class CollectionHandlerTest(CollectionTestBase):
         self.assertEqual(ret['answer_buttons'], [
           {'ease': 1,
            'label': 'Again',
-           'string_label': u'Znowu',
+           'string_label': 'Znowu',
            'interval': 60,
            'string_interval': '<1 minuta'},
           {'ease': 2,
            'label': 'Good',
-           'string_label': u'Dobra',
+           'string_label': 'Dobra',
            'interval': 600,
            'string_interval': '<10 minut'},
           {'ease': 3,
            'label': 'Easy',
-           'string_label': u'Łatwa',
+           'string_label': 'Łatwa',
            'interval': 345600,
            'string_interval': '4 dni'}])
 
@@ -620,8 +620,8 @@ class CardHandlerTest(CollectionTestBase):
         self.assertEqual(ret['id'], card_id)
         self.assertEqual(ret['nid'], note_id)
         self.assertEqual(ret['did'], 1)
-        self.assertFalse(ret.has_key('note'))
-        self.assertFalse(ret.has_key('deck'))
+        self.assertFalse('note' in ret)
+        self.assertFalse('deck' in ret)
 
     def test_index_load(self):
         self.add_default_note()

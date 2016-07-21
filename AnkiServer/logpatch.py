@@ -35,16 +35,16 @@ class SMTPHandler(logging.Handler):
         for the credentials argument.
         """
         logging.Handler.__init__(self)
-        if type(mailhost) == types.TupleType:
+        if type(mailhost) == tuple:
             self.mailhost, self.mailport = mailhost
         else:
             self.mailhost, self.mailport = mailhost, None
-        if type(credentials) == types.TupleType:
+        if type(credentials) == tuple:
             self.username, self.password = credentials
         else:
             self.username = None
         self.fromaddr = fromaddr
-        if type(toaddrs) == types.StringType:
+        if type(toaddrs) == bytes:
             toaddrs = [toaddrs]
         self.toaddrs = toaddrs
         self.subject = subject

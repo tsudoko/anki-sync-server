@@ -15,16 +15,16 @@ PIDPATH = "/tmp/ankiserver.pid"
 COLLECTIONPATH = "collections/"
 
 def usage():
-    print "usage: "+sys.argv[0]+" <command> [<args>]"
-    print
-    print "Commands:"
-    print "  start [configfile] - start the server"
-    print "  debug [configfile] - start the server in debug mode"
-    print "  stop               - stop the server"
-    print "  adduser <username> - add a new user"
-    print "  deluser <username> - delete a user"
-    print "  lsuser             - list users"
-    print "  passwd <username>  - change password of a user"
+    print("usage: "+sys.argv[0]+" <command> [<args>]")
+    print()
+    print("Commands:")
+    print("  start [configfile] - start the server")
+    print("  debug [configfile] - start the server in debug mode")
+    print("  stop               - stop the server")
+    print("  adduser <username> - add a new user")
+    print("  deluser <username> - delete a user")
+    print("  lsuser             - list users")
+    print("  passwd <username>  - change password of a user")
 
 def startsrv(configpath, debug):
     if not configpath:
@@ -58,14 +58,14 @@ def stopsrv():
 
                 os.kill(pid, signal.SIGKILL)
                 os.remove(PIDPATH)
-        except Exception, error:
-            print >>sys.stderr, sys.argv[0]+": Failed to stop server: "+error.message
+        except Exception as error:
+            print(sys.argv[0]+": Failed to stop server: "+error.message, file=sys.stderr)
     else:
-        print >>sys.stderr, sys.argv[0]+": The server is not running"
+        print(sys.argv[0]+": The server is not running", file=sys.stderr)
 
 def adduser(username):
     if username:
-        print "Enter password for "+username+": "
+        print("Enter password for "+username+": ")
 
         password = getpass.getpass()
         salt = binascii.b2a_hex(os.urandom(8))
@@ -99,7 +99,7 @@ def deluser(username):
     elif not username:
         usage()
     else:
-        print >>sys.stderr, sys.argv[0]+": Database file does not exist"
+        print(sys.argv[0]+": Database file does not exist", file=sys.stderr)
 
 def lsuser():
     conn = sqlite3.connect(AUTHDBPATH)
@@ -110,7 +110,7 @@ def lsuser():
     row = cursor.fetchone()
 
     while row is not None:
-        print row[0]
+        print(row[0])
 
         row = cursor.fetchone()
 
@@ -118,7 +118,7 @@ def lsuser():
 
 def passwd(username):
     if os.path.isfile(AUTHDBPATH):
-        print "Enter password for "+username+": "
+        print("Enter password for "+username+": ")
 
         password = getpass.getpass()
         salt = binascii.b2a_hex(os.urandom(8))
@@ -132,7 +132,7 @@ def passwd(username):
         conn.commit()
         conn.close()
     else:
-        print >>sys.stderr, sys.argv[0]+": Database file does not exist"
+        print(sys.argv[0]+": Database file does not exist", file=sys.stderr)
 
 def main():
     argc = len(sys.argv)

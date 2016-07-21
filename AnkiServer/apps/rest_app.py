@@ -50,7 +50,7 @@ class RestHandlerBase(object):
 class _RestHandlerWrapper(RestHandlerBase):
     """Wrapper for functions that we can't modify."""
     def __init__(self, func_name, func, hasReturnValue=True):
-        self.func_name = func_name
+        self.__name__ = func_name
         self.func = func
         self.hasReturnValue = hasReturnValue
     def __call__(self, *args, **kw):
@@ -116,7 +116,7 @@ class RestApp(object):
          - 'handler' is a callable that takes (collection, data, ids).
         """
 
-        if self.handlers[type].has_key(name):
+        if name in self.handlers[type]:
             raise "Handler already for %(type)s/%(name)s exists!"
         self.handlers[type][name] = handler
 
@@ -248,7 +248,7 @@ class RestApp(object):
         
         try:
             data = json.loads(req.body)
-        except JSONDecodeError, e:
+        except JSONDecodeError as e:
             logging.error(req.path+': Unable to parse JSON: '+str(e), exc_info=True)
             raise HTTPBadRequest()
 
@@ -257,7 +257,7 @@ class RestApp(object):
             data = {}
 
         # make the keys into non-unicode strings
-        data = dict([(str(k), v) for k, v in data.items()])
+        data = dict([(str(k), v) for k, v in list(data.items())])
 
         return data
 
@@ -285,7 +285,7 @@ class RestApp(object):
 
         # get the collection path
         collection_path = self._getCollectionPath(ids[0])
-        print collection_path
+        print(collection_path)
 
         # get the handler function
         handler, hasReturnValue = self._getHandler(type, name)
@@ -308,10 +308,10 @@ class RestApp(object):
             col = self.collection_manager.get_collection(collection_path, self.setup_new_collection)
             handler_request = RestHandlerRequest(self, data, ids, session)
             output = col.execute(self._execute_handler, [handler_request, handler], {}, hasReturnValue)
-        except HTTPError, e:
+        except HTTPError as e:
             # we pass these on through!
             raise
-        except Exception, e:
+        except Exception as e:
             logging.error(e)
             return HTTPInternalServerError()
 
@@ -355,7 +355,7 @@ class CollectionHandler(RestHandlerBase):
         # TODO: use SQLAlchemy objects to do this
         sql = "SELECT n.id FROM notes AS n";
         args = []
-        if req.data.has_key('updated_since'):
+        if 'updated_since' in req.data:
             sql += ' WHERE n.mod > ?'
             args.append(req.data['updated_since'])
         sql += ' ORDER BY n.mod DESC'
@@ -375,16 +375,16 @@ class CollectionHandler(RestHandlerBase):
 
         # TODO: I think this would be better with 'model' for the name
         # and 'mid' for the model id.
-        if type(req.data['model']) in (str, unicode):
+        if type(req.data['model']) in (str, str):
             model = col.models.byName(req.data['model'])
         else:
             model = col.models.get(req.data['model'])
 
         note = Note(col, model)
-        for name, value in req.data['fields'].items():
+        for name, value in list(req.data['fields'].items()):
             note[name] = value
 
-        if req.data.has_key('tags'):
+        if 'tags' in req.data:
             note.setTagsFromStr(req.data['tags'])
 
         col.addNote(note)
@@ -488,7 +488,7 @@ class CollectionHandler(RestHandlerBase):
         # TODO: use SQLAlchemy objects to do this
         sql = "SELECT c.id FROM notes AS n INNER JOIN cards AS c ON c.nid = n.id";
         args = []
-        if req.data.has_key('updated_since'):
+        if 'updated_since' in req.data:
             sql += ' WHERE n.mod > ?'
             args.append(req.data['updated_since'])
         sql += ' ORDER BY n.mod DESC'
@@ -507,7 +507,7 @@ class CollectionHandler(RestHandlerBase):
     #
 
     def reset_scheduler(self, col, req):
-        if req.data.has_key('deck'):
+        if 'deck' in req.data:
             deck = DeckHandler._get_deck(col, req.data['deck'])
             col.decks.select(deck['id'])
 
@@ -547,7 +547,7 @@ class CollectionHandler(RestHandlerBase):
         } for ease, label in enumerate(l, 1)]
 
     def next_card(self, col, req):
-        if req.data.has_key('deck'):
+        if 'deck' in req.data:
             deck = DeckHandler._get_deck(col, req.data['deck'])
             col.decks.select(deck['id'])
 
@@ -575,11 +575,11 @@ class CollectionHandler(RestHandlerBase):
     def answer_card(self, col, req):
         import time
 
-        card_id = long(req.data['id'])
+        card_id = int(req.data['id'])
         ease = int(req.data['ease'])
 
         card = col.getCard(card_id)
-        if req.data.has_key('timerStarted'):
+        if 'timerStarted' in req.data:
             card.timerStarted = float(req.data['timerStarted'])
         else:
             card.timerStarted = time.time()
@@ -602,7 +602,7 @@ class CollectionHandler(RestHandlerBase):
         # TODO: Use sqlalchemy to build this query!
         sql = "SELECT r.cid, r.ease, r.id FROM revlog AS r INNER JOIN (SELECT cid, MAX(id) AS id FROM revlog GROUP BY cid) AS q ON r.cid = q.cid AND r.id = q.id"
         where = []
-        if req.data.has_key('ids'):
+        if 'ids' in req.data:
             where.append('ids IN (' + (','.join(["'%s'" % x for x in req.data['ids']])) + ')')
         if len(where) > 0:
             sql += ' WHERE ' + ' AND '.join(where)
@@ -619,9 +619,9 @@ class CollectionHandler(RestHandlerBase):
         # TODO: Use sqlalchemy to build this query!
         sql = "SELECT r.id, r.ease, r.cid, r.usn, r.ivl, r.lastIvl, r.factor, r.time, r.type FROM revlog AS r"
         args = []
-        if req.data.has_key('updated_since'):
+        if 'updated_since' in req.data:
             sql += ' WHERE r.id > ?'
-            args.append(long(req.data['updated_since']) * 1000)
+            args.append(int(req.data['updated_since']) * 1000)
         sql += ' ORDER BY r.id DESC'
         sql += ' LIMIT ' + str(req.data.get('limit', 100))
 
@@ -670,7 +670,7 @@ class CollectionHandler(RestHandlerBase):
             html = ''
 
         for name in reports:
-            if not self.stats_reports.has_key(name):
+            if name not in self.stats_reports:
                 raise HTTPBadRequest("Unknown report name: %s" % name)
             func = getattr(stats, self.stats_reports[name])
 
@@ -707,14 +707,14 @@ class ImportExportHandler(RestHandlerBase):
     """Handler group for the 'collection' type, but it's not added by default."""
 
     def _get_filedata(self, data):
-        import urllib2
+        import urllib.request, urllib.error, urllib.parse
 
-        if data.has_key('data'):
+        if 'data' in data:
             return data['data']
 
         fd = None
         try:
-            fd = urllib2.urlopen(data['url'])
+            fd = urllib.request.urlopen(data['url'])
             filedata = fd.read()
         finally:
             if fd is not None:
@@ -783,7 +783,7 @@ class NoteHandler(RestHandlerBase):
         }
 
         # add all the fields
-        for name, value in note.items():
+        for name, value in list(note.items()):
             d['fields'][name] = value
 
         return d
@@ -796,7 +796,7 @@ class NoteHandler(RestHandlerBase):
         note = col.getNote(req.ids[1])
         if note:
             # update fields
-            for name in note.keys():
+            for name in list(note.keys()):
                 note[name] = req.data['fields'].get(name, '')
 
             # update tags
@@ -855,7 +855,7 @@ class DeckHandler(RestHandlerBase):
     @staticmethod
     def _get_deck(col, val):
         try:
-            did = long(val)
+            did = int(val)
             deck = col.decks.get(did, False)
         except ValueError:
             deck = col.decks.byName(val)

@@ -41,9 +41,9 @@ except ImportError:
     import json
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 try:
     from pysqlite2 import dbapi2 as sqlite
@@ -203,8 +203,8 @@ class SyncMediaHandler(MediaSyncer):
         MediaManager.addFilesFromZip().
         """
 
-        if not isinstance(filename, unicode):
-            filename = unicode(filename, "utf8")
+        if not isinstance(filename, str):
+            filename = str(filename, "utf8")
 
         # Normalize name for platform.
         if isMac:  # global
@@ -562,12 +562,12 @@ class SyncApp(object):
             if url in SyncCollectionHandler.operations + SyncMediaHandler.operations:
                 # 'meta' passes the SYNC_VER but it isn't used in the handler
                 if url == 'meta':
-                    if session.skey == None and req.POST.has_key('s'):
+                    if session.skey == None and 's' in req.POST:
                         session.skey = req.POST['s']
-                    if data.has_key('v'):
+                    if 'v' in data:
                         session.version = data['v']
                         del data['v']
-                    if data.has_key('cv'):
+                    if 'cv' in data:
                         session.client_version = data['cv']
                     self.session_manager.save(hkey, session)
                     session = self.session_manager.load(hkey, self.create_session)
@@ -582,7 +582,7 @@ class SyncApp(object):
                 result = self._execute_handler_method_in_thread(url, data, session)
 
                 # If it's a complex data type, we convert it to JSON
-                if type(result) not in (str, unicode):
+                if type(result) not in (str, str):
                     result = json.dumps(result)
 
                 if url == 'finish':
@@ -653,7 +653,7 @@ class SyncApp(object):
             col.save()
             return res
 
-        run_func.func_name = method_name  # More useful debugging messages.
+        run_func.__name__ = method_name  # More useful debugging messages.
 
         # Send the closure to the thread for execution.
         thread = session.get_thread()
@@ -760,9 +760,9 @@ class SqliteUserManager(SimpleUserManager):
 
 # Our entry point
 def make_app(global_conf, **local_conf):
-    if local_conf.has_key('session_db_path'):
+    if 'session_db_path' in local_conf:
         local_conf['session_manager'] = SqliteSessionManager(local_conf['session_db_path'])
-    if local_conf.has_key('auth_db_path'):
+    if 'auth_db_path' in local_conf:
         local_conf['user_manager'] = SqliteUserManager(local_conf['auth_db_path'])
     return SyncApp(**local_conf)
 
@@ -773,10 +773,10 @@ def main():
     ankiserver = SyncApp()
     httpd = make_server('', 8001, ankiserver)
     try:
-        print "Starting..."
+        print("Starting...")
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print "Exiting ..."
+        print("Exiting ...")
     finally:
         shutdown()
 
