@@ -59,7 +59,7 @@ def stopsrv():
                 os.kill(pid, signal.SIGKILL)
                 os.remove(PIDPATH)
         except Exception as error:
-            print(sys.argv[0]+": Failed to stop server: "+error.message, file=sys.stderr)
+            print(sys.argv[0]+": Failed to stop server: "+str(error), file=sys.stderr)
     else:
         print(sys.argv[0]+": The server is not running", file=sys.stderr)
 
