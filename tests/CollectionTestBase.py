@@ -3,7 +3,7 @@
 import unittest
 import tempfile
 import os
-from mock import MagicMock
+from unittest.mock import MagicMock
 import shutil
 
 import anki

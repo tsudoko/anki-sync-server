@@ -8,8 +8,7 @@ import logging
 import time
 from pprint import pprint
 
-import mock
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 import AnkiServer
 from AnkiServer.collection import CollectionManager

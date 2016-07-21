@@ -4,8 +4,7 @@ import shutil
 import tempfile
 import unittest
 
-import mock
-from mock import MagicMock, sentinel
+from unittest.mock import MagicMock, sentinel
 
 import AnkiServer
 from AnkiServer.collection import CollectionWrapper, CollectionManager
@@ -47,7 +46,7 @@ class CollectionWrapperTest(unittest.TestCase):
         self.assertTrue(os.path.exists(self.collection_path))
 
     def test_del(self):
-        with mock.patch('anki.storage.Collection') as anki_storage_Collection:
+        with unittest.mock.patch('anki.storage.Collection') as anki_storage_Collection:
             col = anki_storage_Collection.return_value
             wrapper = CollectionWrapper(self.collection_path)
             wrapper.open()
@@ -56,7 +55,7 @@ class CollectionWrapperTest(unittest.TestCase):
 
     def test_setup_func(self):
         # Run it when the collection doesn't exist
-        with mock.patch('anki.storage.Collection') as anki_storage_Collection:
+        with unittest.mock.patch('anki.storage.Collection') as anki_storage_Collection:
             col = anki_storage_Collection.return_value
             setup_new_collection = MagicMock()
             self.assertFalse(os.path.exists(self.collection_path))
@@ -74,7 +73,7 @@ class CollectionWrapperTest(unittest.TestCase):
             fd.write('Collection!')
 
         # Run it when the collection does exist
-        with mock.patch('anki.storage.Collection'):
+        with unittest.mock.patch('anki.storage.Collection'):
             setup_new_collection = lambda col: self.fail("Setup function called when collection already exists!")
             self.assertTrue(os.path.exists(self.collection_path))
             wrapper = CollectionWrapper(self.collection_path, setup_new_collection)
@@ -83,7 +82,7 @@ class CollectionWrapperTest(unittest.TestCase):
             wrapper = None
 
     def test_execute(self):
-        with mock.patch('anki.storage.Collection') as anki_storage_Collection:
+        with unittest.mock.patch('anki.storage.Collection') as anki_storage_Collection:
             col = anki_storage_Collection.return_value
             func = MagicMock()
             func.return_value = sentinel.some_object
@@ -103,7 +102,7 @@ class CollectionWrapperTest(unittest.TestCase):
 
 class CollectionManagerTest(unittest.TestCase):
     def test_lifecycle(self):
-        with mock.patch('AnkiServer.collection.CollectionManager.collection_wrapper') as CollectionWrapper:
+        with unittest.mock.patch('AnkiServer.collection.CollectionManager.collection_wrapper') as CollectionWrapper:
             wrapper = MagicMock()
             CollectionWrapper.return_value = wrapper
 

@@ -4,8 +4,7 @@ import shutil
 import tempfile
 import unittest
 
-import mock
-from mock import MagicMock, sentinel
+from unittest.mock import MagicMock, sentinel
 
 import AnkiServer
 from AnkiServer.importer import get_importer_class, import_file

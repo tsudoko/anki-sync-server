@@ -21,11 +21,15 @@ from webob import Response
 
 import os
 import hashlib
+import json
 import logging
 import random
 import string
 import unicodedata
 import zipfile
+
+from io import StringIO
+from sqlite3 import dbapi2 as sqlite
 
 import AnkiServer
 
@@ -35,20 +39,6 @@ from anki.sync import Syncer, MediaSyncer
 from anki.utils import intTime, checksum, isMac
 from anki.consts import SYNC_ZIP_SIZE, SYNC_ZIP_COUNT
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
-try:
-    from io import StringIO
-except ImportError:
-    from io import StringIO
-
-try:
-    from pysqlite2 import dbapi2 as sqlite
-except ImportError:
-    from sqlite3 import dbapi2 as sqlite
 
 class SyncCollectionHandler(Syncer):
     operations = ['meta', 'applyChanges', 'start', 'chunk', 'applyChunk', 'sanityCheck2', 'finish']

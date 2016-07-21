@@ -20,15 +20,7 @@ from webob.exc import *
 from webob import Response
 
 #from pprint import pprint
-
-try:
-    import simplejson as json
-    from simplejson import JSONDecodeError
-except ImportError:
-    import json
-    JSONDecodeError = ValueError
-
-import os, logging
+import os, logging, json
 
 import anki.consts
 import anki.lang
@@ -248,7 +240,7 @@ class RestApp(object):
         
         try:
             data = json.loads(req.body)
-        except JSONDecodeError as e:
+        except ValueError as e:
             logging.error(req.path+': Unable to parse JSON: '+str(e), exc_info=True)
             raise HTTPBadRequest()
 
@@ -707,7 +699,7 @@ class ImportExportHandler(RestHandlerBase):
     """Handler group for the 'collection' type, but it's not added by default."""
 
     def _get_filedata(self, data):
-        import urllib.request, urllib.error, urllib.parse
+        import urllib.request
 
         if 'data' in data:
             return data['data']
