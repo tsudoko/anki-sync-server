@@ -59,7 +59,7 @@ class SyncCollectionHandler(Syncer):
             version = '2.0.12'
             platform = 'unknown'
 
-        version_int = [ int(str(x).translate(None, string.ascii_letters))
+        version_int = [ int(''.join(filter(lambda x: x.isdigit(), x)))
                         for x in version.split('.') ]
 
         # Some insanity added in Anki 2.0.13
