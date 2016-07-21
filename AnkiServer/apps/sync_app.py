@@ -427,7 +427,7 @@ class SyncApp(object):
 
         if compression:
             buf = gzip.GzipFile(mode="rb", fileobj=StringIO(data))
-            data = buf.read()
+            data = buf.read().decode("utf-8")
             buf.close()
 
         # really lame check for JSON
@@ -475,7 +475,7 @@ class SyncApp(object):
 
         col.close()
         try:
-            data = open(session.get_collection_path(), 'rb').read()
+            data = open(session.get_collection_path(), 'rb').read().decode("utf-8")
         finally:
             col.reopen()
         return data
@@ -503,7 +503,7 @@ class SyncApp(object):
             compression = 0
 
         try:
-            data = req.POST['data'].file.read()
+            data = req.POST['data'].file.read().decode("utf-8")
             data = self._decode_data(data, compression)
         except KeyError:
             data = {}

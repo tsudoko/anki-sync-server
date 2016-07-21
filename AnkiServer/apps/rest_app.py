@@ -707,7 +707,7 @@ class ImportExportHandler(RestHandlerBase):
         fd = None
         try:
             fd = urllib.request.urlopen(data['url'])
-            filedata = fd.read()
+            filedata = fd.read().decode("utf-8")
         finally:
             if fd is not None:
                 fd.close()
