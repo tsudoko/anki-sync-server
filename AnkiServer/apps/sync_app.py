@@ -39,7 +39,6 @@ from anki.sync import Syncer, MediaSyncer
 from anki.utils import intTime, checksum, isMac
 from anki.consts import SYNC_ZIP_SIZE, SYNC_ZIP_COUNT
 
-
 class SyncCollectionHandler(Syncer):
     operations = ['meta', 'applyChanges', 'start', 'chunk', 'applyChunk', 'sanityCheck2', 'finish']
 
@@ -525,6 +524,7 @@ class SyncApp(object):
                 return Response(
                     status='200 OK',
                     content_type='application/json',
+                    charset='utf-8',
                     content_encoding='deflate',
                     body=zlib.compress(json.dumps({'status': 'oldVersion'})))
 
@@ -541,6 +541,7 @@ class SyncApp(object):
                     return Response(
                         status='200 OK',
                         content_type='application/json',
+                        charset='utf-8',
                         body=json.dumps(result))
                 else:
                     # TODO: do I have to pass 'null' for the client to receive None?
@@ -587,6 +588,7 @@ class SyncApp(object):
                 return Response(
                     status='200 OK',
                     content_type='application/json',
+                    charset='utf-8',
                     body=result)
 
             elif url == 'upload':

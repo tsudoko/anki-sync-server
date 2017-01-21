@@ -270,7 +270,7 @@ class RestApp(object):
         if req.path == '/':
             return Response('AnkiServer ' + str(AnkiServer.__version__), content_type='text/plain')
         if req.path == '/list_collections':
-            return Response(json.dumps(self.list_collections()), content_type='application/json')
+            return Response(json.dumps(self.list_collections()), charset='utf-8', content_type='application/json')
 
         # parse the path
         type, name, ids = self._parsePath(req.path)
@@ -310,7 +310,7 @@ class RestApp(object):
         if output is None:
             return Response('', content_type='text/plain')
         else:
-            return Response(json.dumps(output), content_type='application/json')
+            return Response(json.dumps(output), charset='utf-8', content_type='application/json')
 
 class CollectionHandler(RestHandlerBase):
     """Default handler group for 'collection' type."""
