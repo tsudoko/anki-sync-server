@@ -35,7 +35,7 @@ def noReturnValue(func):
     func.hasReturnValue = False
     return func
 
-class RestHandlerBase(object):
+class RestHandlerBase:
     """Parent class for a handler group."""
     hasReturnValue = True
 
@@ -48,7 +48,7 @@ class _RestHandlerWrapper(RestHandlerBase):
     def __call__(self, *args, **kw):
         return self.func(*args, **kw)
 
-class RestHandlerRequest(object):
+class RestHandlerRequest:
     def __init__(self, app, data, ids, session):
         self.app = app
         self.data = data
@@ -61,7 +61,7 @@ class RestHandlerRequest(object):
     def __eq__(self, other):
         return self.app == other.app and self.data == other.data and self.ids == other.ids and self.session == other.session
 
-class RestApp(object):
+class RestApp:
     """A WSGI app that implements RESTful operations on Collections, Decks and Cards."""
 
     # Defines not only the valid handler types, but their position in the URL string

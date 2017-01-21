@@ -22,7 +22,7 @@ import os, errno
 
 __all__ = ['CollectionWrapper', 'CollectionManager']
 
-class CollectionWrapper(object):
+class CollectionWrapper:
     """A simple wrapper around an anki.storage.Collection object.
 
     This allows us to manage and refer to the collection, whether it's open or not. It
@@ -109,7 +109,7 @@ class CollectionWrapper(object):
         """Returns True if the collection is open, False otherwise."""
         return self.__col is not None
 
-class CollectionManager(object):
+class CollectionManager:
     """Manages a set of CollectionWrapper objects."""
 
     collection_wrapper = CollectionWrapper

@@ -29,7 +29,7 @@ import time, logging
 
 __all__ = ['ThreadingCollectionWrapper', 'ThreadingCollectionManager']
 
-class ThreadingCollectionWrapper(object):
+class ThreadingCollectionWrapper:
     """Provides the same interface as CollectionWrapper, but it creates a new Thread to 
     interact with the collection."""
 
