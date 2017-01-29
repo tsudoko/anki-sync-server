@@ -37,17 +37,17 @@ However, if you want to try the latest bleeding edge version OR you
 want to help with development, you'll need to install from source.
 In that case, follow the instructions in the next two sections.
 
-Setting up a virtualenv
------------------------
+Setting up a venv
+-----------------
 
 If you want to install your Anki Server in an isolated Python
 environment using
-`virtualenv <https://pypi.python.org/pypi/virtualenv>`_, please
+`venv <https://docs.python.org/3/library/venv.html>`_, please
 follow these instructions before going on to the next section. If
 not, just skip to the "Installing" section below.
 
-There are many reasons for installing into a virtualenv, rather
-than globally on your system:
+There are many reasons for installing into a venv, rather than
+globally on your system:
 
 
 -  You can keep the Anki Server's dependencies seperate from other
@@ -56,34 +56,23 @@ than globally on your system:
 -  You don't have permission to install globally on your system
    (like on a shared host).
 
-Here are step-by-step instruction for setting up your virtualenv:
+Here are step-by-step instruction for setting up your venv:
 
-1. First, you need to install "virtualenv". If your system has
-   ``easy_install`` or ``pip``, this is just a matter of::
+1. First, create your a Python environment for running AnkiServer::
 
-     $ easy_install virtualenv
+     $ python3 -m venv AnkiServer.env
 
-   Or using pip::
-
-     $ pip install virtualenv
-
-   Or you can use your the package manager provided by your OS.
-
-2. Next, create your a Python environment for running AnkiServer::
-
-     $ virtualenv AnkiServer.env
-
-3. (Optional) Enter the virtualenv to save you on typing::
+2. (Optional) Enter the venv to save you on typing::
 
      $ . AnkiServer.env/bin/activate
 
 
-If you skip step 3, you'll have to type
+If you skip step 2, you'll have to type
 ``AnkiServer.env/bin/python`` instead of ``python`` and
 ``AnkiServer.env/bin/paster`` instead of ``paster`` in the following
 sections.
 
-Also, remember that the environment change in step 3 only lasts as
+Also, remember that the environment change in step 2 only lasts as
 long as your current terminal session. You'll have to re-enter the
 environment if you enter that terminal and come back later.
 
