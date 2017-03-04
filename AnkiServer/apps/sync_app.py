@@ -57,35 +57,20 @@ class SyncCollectionHandler(Syncer):
         # So that 'server' (the 3rd argument) can't get set
         Syncer.__init__(self, col)
 
-    def meta(self, cv=None):
+    def meta(self):
         # Make sure the media database is open!
         if self.col.media.db is None:
             self.col.media.connect()
 
-        if cv is not None:
-            client, version, platform = cv.split(',')
-        else:
-            client = 'ankidesktop'
-            version = '2.0.12'
-            platform = 'unknown'
-
-        version_int = [ int(str(x).translate(None, string.ascii_letters))
-                        for x in version.split('.') ]
-
-        # Some insanity added in Anki 2.0.13
-        if (client == 'ankidroid' and version_int >= [2, 3]) \
-        or (client == 'ankidesktop' and version_int >= [2, 0, 13]):
-            return {
-              'scm': self.col.scm,
-              'ts': intTime(),
-              'mod': self.col.mod,
-              'usn': self.col._usn,
-              'musn': self.col.media.lastUsn(),
-              'msg': '',
-              'cont': True,
-            }
-        else:
-            return (self.col.mod, self.col.scm, self.col._usn, intTime(), self.col.media.lastUsn())
+        return {
+            'scm': self.col.scm,
+            'ts': intTime(),
+            'mod': self.col.mod,
+            'usn': self.col._usn,
+            'musn': self.col.media.lastUsn(),
+            'msg': '',
+            'cont': True,
+        }
 
 class SyncMediaHandler(MediaSyncer):
     operations = ['begin', 'mediaChanges', 'mediaSanity', 'mediaList', 'uploadChanges', 'downloadFiles']
@@ -569,6 +554,15 @@ class SyncApp(object):
                         del data['v']
                     if data.has_key('cv'):
                         session.client_version = data['cv']
+                        client, version, platform = data['cv'].split(',')
+                        del data['cv']
+
+                        version_int = [ int(str(x).translate(None, string.ascii_letters))
+                                        for x in version.split('.') ]
+
+                        if (client == 'ankidroid' and version_int < [2, 3, 0]) \
+                        or (client == 'ankidesktop' and version_int < [2, 0, 27]):
+                            return Response(status="501")  # client needs upgrade
                     self.session_manager.save(hkey, session)
                     session = self.session_manager.load(hkey, self.create_session)
 
