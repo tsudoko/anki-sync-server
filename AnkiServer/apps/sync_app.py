@@ -744,7 +744,7 @@ class SqliteUserManager(SimpleUserManager):
             salt = db_hash[-16:]
             hashobj = hashlib.sha256()
 
-            hashobj.update(bytes(username+password+salt, "utf-8"))
+            hashobj.update("{}{}{}".format(username, password, salt).encode("utf-8"))
 
         conn.close()
 

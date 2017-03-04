@@ -15,7 +15,7 @@ PIDPATH = "/tmp/ankiserver.pid"
 COLLECTIONPATH = "collections/"
 
 def usage():
-    print("usage: "+sys.argv[0]+" <command> [<args>]")
+    print("usage: {} <command> [<args>]".format(sys.argv[0]))
     print()
     print("Commands:")
     print("  start [configfile] - start the server")
@@ -59,17 +59,15 @@ def stopsrv():
                 os.kill(pid, signal.SIGKILL)
                 os.remove(PIDPATH)
         except Exception as error:
-            print(sys.argv[0]+": Failed to stop server: "+str(error), file=sys.stderr)
+            print("{}: Failed to stop server: {}".format(sys.argv[0], error), file=sys.stderr)
     else:
-        print(sys.argv[0]+": The server is not running", file=sys.stderr)
+        print("{}: The server is not running".format(sys.argv[0]), file=sys.stderr)
 
 def adduser(username):
     if username:
-        print("Enter password for "+username+": ")
-
-        password = getpass.getpass()
+        password = getpass.getpass("Enter password for {}: ".format(username))
         salt = binascii.b2a_hex(os.urandom(8)).decode("utf-8")
-        hash = hashlib.sha256(bytes(username+password+salt, "utf-8")).hexdigest()+salt
+        hash = hashlib.sha256("{}{}{}".format(username, password, salt).encode("utf-8")).hexdigest()+salt
 
         conn = sqlite3.connect(AUTHDBPATH)
         cursor = conn.cursor()
@@ -99,7 +97,7 @@ def deluser(username):
     elif not username:
         usage()
     else:
-        print(sys.argv[0]+": Database file does not exist", file=sys.stderr)
+        print("{}: Database file does not exist".format(sys.argv[0]), file=sys.stderr)
 
 def lsuser():
     conn = sqlite3.connect(AUTHDBPATH)
@@ -118,11 +116,9 @@ def lsuser():
 
 def passwd(username):
     if os.path.isfile(AUTHDBPATH):
-        print("Enter password for "+username+": ")
-
-        password = getpass.getpass()
+        password = getpass.getpass("Enter password for {}: ".format(username))
         salt = binascii.b2a_hex(os.urandom(8)).decode("utf-8")
-        hash = hashlib.sha256(bytes(username+password+salt, "utf-8")).hexdigest()+salt
+        hash = hashlib.sha256("{}{}{}".format(username, password, salt).encode("utf-8")).hexdigest()+salt
 
         conn = sqlite3.connect(AUTHDBPATH)
         cursor = conn.cursor()
@@ -132,7 +128,7 @@ def passwd(username):
         conn.commit()
         conn.close()
     else:
-        print(sys.argv[0]+": Database file does not exist", file=sys.stderr)
+        print("{}: Database file does not exist".format(sys.argv[0]), file=sys.stderr)
 
 def main():
     argc = len(sys.argv)
