@@ -8,11 +8,12 @@ import binascii
 import getpass
 import hashlib
 import sqlite3
+import tempfile
 
 SERVERCONFIG = "production.ini"
 AUTHDBPATH = "auth.db"
-PIDPATH = "/tmp/ankiserver.pid"
-COLLECTIONPATH = "collections/"
+PIDPATH = os.path.join(tempfile.gettempdir(), "ankiserver.pid")
+COLLECTIONPATH = "collections" + os.path.sep
 
 def usage():
     print("usage: {} <command> [<args>]".format(sys.argv[0]))
