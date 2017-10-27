@@ -83,7 +83,7 @@ class ThreadingCollectionWrapper:
             while self._running:
                 func, args, kw, return_queue = self._queue.get(True)
 
-                if hasattr(func, 'func_name'):
+                if hasattr(func, '__name__'):
                     func_name = func.__name__
                 else:
                     func_name = func.__class__.__name__
