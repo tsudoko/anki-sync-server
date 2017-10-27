@@ -426,12 +426,12 @@ class SyncApp:
 
         if compression:
             buf = gzip.GzipFile(mode="rb", fileobj=BytesIO(data))
-            data = buf.read().decode("utf-8")
+            data = buf.read()
             buf.close()
 
         # really lame check for JSON
-        if data[0] == '{' and data[-1] == '}':
-            data = json.loads(data)
+        if data[0] == ord('{') and data[-1] == ord('}'):
+            data = json.loads(data.decode("utf-8"))
         else:
             data = {'data': data}
 
